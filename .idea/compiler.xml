@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="xxs-auth-common" />
+        <module name="xxs-auth-service" />
+        <module name="xxs-cart" />
+        <module name="xxs-common" />
+        <module name="xxs-dao" />
+        <module name="xxs-eureka-server" />
+        <module name="xxs-gateway" />
+        <module name="xxs-order" />
+        <module name="xxs-parent" />
+        <module name="xxs-pojo" />
+        <module name="xxs-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="xxs-auth" options="-parameters" />
+      <module name="xxs-auth-common" options="-parameters" />
+      <module name="xxs-auth-service" options="-parameters" />
+      <module name="xxs-cart" options="-parameters" />
+      <module name="xxs-common" options="-parameters" />
+      <module name="xxs-dao" options="-parameters" />
+      <module name="xxs-eureka-server" options="-parameters" />
+      <module name="xxs-gateway" options="-parameters" />
+      <module name="xxs-order" options="-parameters" />
+      <module name="xxs-parent" options="-parameters" />
+      <module name="xxs-pojo" options="-parameters" />
+      <module name="xxs-service" options="-parameters" />
+    </option>
+  </component>
+</project>
