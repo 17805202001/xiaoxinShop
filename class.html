@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+	<meta name="format-detection" content="telephone=no, email=no"/>
+	<meta charset="UTF-8">
+	<title>优购优品网</title>
+	<link rel="stylesheet" href="themes/css/core.css">
+	<link rel="stylesheet" href="themes/css/icon.css">
+	<link rel="stylesheet" href="themes/css/home.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<link href="iTunesArtwork@2x.png" sizes="114x114" rel="apple-touch-icon-precomposed">
+</head>
+<style>
+		
+	
+		.tab-tit .cur {
+			background: rgb(252, 179, 110);
+			color: #fff;
+		}
+	
+		
+	</style>
+<body>
+<div id="app">
+	<header class="aui-header-default aui-header-fixed aui-header-bg">
+		<a href="#" class="aui-header-item">
+			<i class="aui-icon aui-icon-code"></i>
+		</a>
+		<div class="aui-header-center aui-header-center-clear">
+			<div class="aui-header-search-box">
+				<i class="aui-icon aui-icon-small-search"></i>
+				<input id="" type="text"  placeholder="iphone8 手机钢化膜" class="aui-header-search" v-model="name">
+			</div>
+		</div>
+		<a href="#" class="aui-header-item-icon">
+			<i class="aui-icon aui-icon-packet"></i>
+			<i class="aui-icon aui-icon-member"></i>
+		</a>
+	</header>
+	<section class="aui-scroll-contents">
+		<div class="aui-scroll-box" data-ydui-scrolltab>
+			<!-- 父分组 -->
+			<div class="aui-scroll-nav">
+				<div class="tab-tit">
+				<a  href="javascript:;" class="aui-scroll-item aui-crt" v-for="(c,i) in category" :class="{'cur':current==i}" @click="show(i)" >
+					<div class="aui-scroll-item-icon"></div>
+					<div class="aui-scroll-item-text">
+						<span class="on">{{c.cat_name}}</span>
+						
+					</div>
+				</a>
+			</div>
+			</div>
+			<!-- 子分组 -->
+			<div class="aui-scroll-content">
+				
+					<div class="aui-scroll-content-item" v-for="(c,i) in category" v-show="current==i">
+						<div class="aui-class-img">
+							<img src="themes/img/pd/cf-4.jpg" alt="">
+						</div>
+						<h2 class="aui-scroll-content-title">{{c.cat_name}}</h2>
+						<section class="aui-grid-content">
+							<div class="aui-grid-row aui-grid-row-clear">
+								<a class="aui-grid-row-item" v-for="cc in c.children" @click="add(cc.id)" >
+									<i class="aui-icon-large aui-icon-sign"><img src="themes/img/ad/x-sf-2.jpg" alt=""></i>
+									<p class="aui-grid-row-label">{{cc.cat_name}}</p>
+								</a>
+								
+								
+							</div>
+						</section>
+					
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+	<footer class="aui-footer-default aui-footer-fixed">
+		<a href="index.html" class="aui-footer-item ">
+			<span class="aui-footer-item-icon aui-icon aui-footer-icon-home"></span>
+			<span class="aui-footer-item-text">首页</span>
+		</a>
+		<a href="class.html" class="aui-footer-item aui-footer-active">
+			<span class="aui-footer-item-icon aui-icon aui-footer-icon-class"></span>
+			<span class="aui-footer-item-text">分类</span>
+		</a>
+		<a href="find.html" class="aui-footer-item">
+			<span class="aui-footer-item-icon aui-icon aui-footer-icon-find"></span>
+			<span class="aui-footer-item-text">发现</span>
+		</a>
+		<a href="car.html" class="aui-footer-item">
+			<span class="aui-footer-item-icon aui-icon aui-footer-icon-car"></span>
+			<span class="aui-footer-item-text">购物车</span>
+		</a>
+		<a href="ui-me.html" class="aui-footer-item">
+			<span class="aui-footer-item-icon aui-icon aui-footer-icon-me"></span>
+			<span class="aui-footer-item-text">我的</span>
+		</a>
+	</footer>
+
+
+
+</div>
+</body>
+</html>
+<script src="themes/js/jquery.min.js"></script>
+<script src="themes/js/aui.js"></script>
+
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/js/aui.js"></script>
+<script src="themes/js/vuejs-2.5.16.js"></script>
+<script src="themes/js/mock-min.js"></script>
+<script src="themes/js/mock.js"></script>
+<script src="themes/js/axios-0.18.0.js"></script>
+<script src="themes/js/api.js"></script>
+<script src="themes/components/topnav.js"></script>
+
+<script>
+
+	new Vue({
+		el:"#app",
+		data:{
+
+			//商品分类数组
+			category:[],
+			current:0,
+
+			name:sessionStorage.getItem("name"),
+		},
+		methods:{
+			show:function(i){
+                console.info(i)
+                this.current=i;
+			},
+			
+			//将商品id存到localStorange
+			add:function(i){
+				console.info(i);
+				localStorage.setItem("sid",i);
+
+
+				//记录信息
+				addFoot(i).then(res => {
+
+					console.info(res.data.data.data);
+
+				});
+				location.href="ui-product.html"
+			}
+			
+		},
+		created:function(){
+			
+			//商品分类
+			categorys().then(res =>{
+				this.category=res.data.data.data;
+				console.info(this.category);
+			});
+
+		},
+				
+	});
+
+</script>

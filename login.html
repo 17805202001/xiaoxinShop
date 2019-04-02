@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>登录</title>
+	<link rel="stylesheet" type="text/css" href="themes/css/loaders.min.css" />
+	<link rel="stylesheet" type="text/css" href="themes/css/loading.css" />
+	<link rel="stylesheet" type="text/css" href="themes/css/base.css" />
+	<link rel="stylesheet" type="text/css" href="themes/css/style.css" />
+	<script src="themes/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(window).load(function () {
+			$(".loading").addClass("loader-chanage")
+			$(".loading").fadeOut(300)
+		})
+	</script>
+</head>
+<!--loading页开始-->
+<div class="loading">
+	<div class="loader">
+		<div class="loader-inner pacman">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+	</div>
+</div>
+<!--loading页结束-->
+
+<body>
+	<div id="app">
+		<header class="top-header">
+			<a class="text texta" href="index.html">取消</a>
+			<h3>登录</h3>
+			<a class="text" href="sign.html">注册</a>
+		</header>
+
+		<div class="login">
+			<form>
+				<ul>
+					<li>
+						<img src="themes/img/login.png" />
+						<label>账号</label>
+						<input type="text" placeholder="请输入账号" style="height: 50px;border-radius: 5px" v-model="user.mobile" />
+					</li>
+					<li>
+						<img src="themes/img/password.png" />
+						<label>密码</label>
+						<input type="password" placeholder="请输入密码" style="height: 50px;border-radius: 5px" v-model="user.password" />
+					</li>
+				</ul>
+				<input type="button" value="登录" @click="login" />
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>
+
+<script src="themes/js/vuejs-2.5.16.js"></script>
+<script src="themes/js/axios-0.18.0.js"></script>
+<script src="themes/js/mock-min.js"></script>
+<script src="themes/js/mock.js"></script>
+<script src="themes/js/api.js"></script>
+
+
+<script>
+	new Vue({
+		el: "#app",
+		data: {
+			user: {
+				mobile: "17805202003",
+				password: "123",
+			}
+		},
+		methods: {
+
+			reload: function () {
+				location.href = 'index.html';
+			},
+
+			login: function () {
+				console.info(this.user)
+				//登录
+				logins(this.user).then(res => {
+					var a = res.data.data;
+					console.info(a)
+					//登录成功
+					//将token保存到浏览器的本地存储中
+					localStorage.setItem("token", a.token);
+					//将name保存到浏览器的本地存储中
+					localStorage.setItem("name", a.name);
+					//将name保存到浏览器的本地存储中
+					localStorage.setItem("mobile", a.mobile);
+
+					let url = localStorage.getItem("returnURL");
+					if (url != null) {
+						//将本地的路径删除
+						localStorage.removeItem("returnURL");
+						//进行页面跳转
+						location.href = url;
+					} else {
+						//默认跳转
+						location.href = "index.html"
+					}
+				});
+			}
+		},
+
+	});
+
+
+</script>

@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>用户注册</title>
+	<link rel="stylesheet" href="themes/css/base.css" type="text/css">
+	<link rel="stylesheet" href="themes/css/global.css" type="text/css">
+	<link rel="stylesheet" href="themes/css/header.css" type="text/css">
+	<link rel="stylesheet" href="themes/css/login.css" type="text/css">
+	<link rel="stylesheet" href="themes/css/footer.css" type="text/css">
+</head>
+<body>
+	<div id="app">
+	
+	<!-- 登录主体部分start -->
+	<div class="login w990 bc mt10 regist">
+		<div class="login_hd">
+			<h2>用户注册</h2>
+			<b></b>
+		</div>
+		<div class="login_bd">
+			<div class="login_form fl">
+				<form action="" method="post">
+					<ul>
+						<li>
+							<label for="">用户名：</label>
+							<input type="text" class="txt" name="name" v-model="user.name"/>
+							<p>3-20位字符，可由中文、字母、数字和下划线组成</p>
+						</li>
+						<li>
+							<label for="">密码：</label>
+							<input type="password" class="txt" name="password" v-model="user.password" />
+							<p>6-20位字符，可使用字母、数字和符号的组合，不建议使用纯数字、纯字母、纯符号</p>
+						</li>
+						<li>
+							<label for="">确认密码：</label>
+							<input type="password" class="txt" name="password" />
+							<p> <span>请再次输入密码</p>
+						</li>
+						<li>
+							<label for="">手机号:</label>
+							<input type="text" class="txt" name="mobile" v-model="user.mobile" />
+							<input type="button" :value="count"  @click="sms" :disabled="disabled"/>
+							
+						</li>
+						<li class="checkcode">
+							<label for="">验证码：</label>
+							<input type="text"  name="checkcode" />
+							<img src="themes/img/checkcode1.jpg" alt="" />
+							
+						</li>
+						<li>
+							<label for="">&nbsp;</label>
+							<input type="checkbox" class="chb" checked="checked" /> 我已阅读并同意《用户注册协议》
+						</li>
+						<li>
+								
+							<label for="">&nbsp;</label>
+							<input type="button" value="" class="login_btn" @click="register" />
+						</li>
+					</ul>
+				</form>
+
+				
+			</div>
+			
+			
+
+		</div>
+	</div>
+	<!-- 登录主体部分end -->
+
+	<div style="clear:both;"></div>
+	
+</div>
+</body>
+</html>
+
+<script src="themes/js/vuejs-2.5.16.js"></script>
+<script src="themes/js/mock-min.js"></script>
+<script src="themes/js/mock.js"></script>
+<script src="themes/js/axios-0.18.0.js"></script>
+<script src="themes/js/api.js"></script>
+<script>
+
+	new Vue({
+		el:"#app",
+		data:{
+			user:{
+				name:"",
+				mobile:"",
+				password:""
+			},
+			//按钮状态
+			disabled:false,
+			count:"获取验证码",
+			//秒数
+			times:5,
+		},
+		methods:{
+			//注册
+			register:function(){
+				regist(this.user).then(res =>{
+					var a=res.data.data;
+					if(a.errno==0){
+						//注册成功
+						alert("注册成功");
+						location.href="login.html"
+					}else{
+						//注册失败
+						alert("注册失败")
+					}
+					
+				});
+			},
+
+			//获取验证码
+			sms:function(){
+				sms(this.user.mobile).then(res =>{
+					var a=res.data.data;
+					if(a.errno==0){
+						//发送成功
+						this.disabled=!this.disabled;
+						let clock=window.setInterval(()=>{
+							this.times--;
+							this.count=this.times+'s后重新发送';
+							if(this.times<0){
+								window.clearInterval(clock);
+								this.times=5;
+								this.count="重新获取验证码";
+								this.disabled=!this.disabled;
+							}
+						},1000)
+					}else{
+						//发送失败
+						alert(1)
+					}
+				});
+			}
+		}
+	});
+
+</script>

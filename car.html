@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+	<meta name="format-detection" content="telephone=no, email=no"/>
+	<meta charset="UTF-8">
+	<title>购物车</title>
+	<link rel="stylesheet" href="themes/css/core.css">
+	<link rel="stylesheet" href="themes/css/icon.css">
+	<link rel="stylesheet" href="themes/css/home.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<link href="iTunesArtwork@2x.png" sizes="114x114" rel="apple-touch-icon-precomposed">
+</head>
+<body>
+	<div id="app">
+	<header class="aui-header-default aui-header-fixed aui-header-bg">
+		<a href="javascript:history.back(-1)" class="aui-header-item">
+			<i class="aui-icon aui-icon-back-white"></i>
+		</a>
+		<div class="aui-header-center aui-header-center-clear">
+			<div class="aui-header-center-logo">
+				<div class="aui-car-white-Typeface">购物车(6)</div>
+			</div>
+		</div>
+		<a href="#" class="aui-header-item-icon"   style="min-width:0">
+			<i class="aui-icon aui-icon-member"></i>
+		</a>
+	</header>
+	<section class="aui-car-content">
+		<div class="aui-car-box">
+			<div class="aui-car-box-name">
+				<input type="checkbox" class="check goods-check shopCheck">
+				<h3>
+					<a href="#">优购优品网</a>
+				</h3>
+				<div class="aui-car-coupons">
+					<a href="#">领券</a>
+					
+				</div>
+			</div>
+			<div class="aui-car-box-list">
+				<ul>
+					
+					
+					<li v-for="(c,i) in cart" >
+						<div class="aui-car-box-list-item">
+
+							
+
+							<input type="checkbox" class="check goods-check goodsCheck" :checked="c.cartChecked" @click.prevent="checkOne(c)">
+							<div class="aui-car-box-list-img">
+								<a href="ui-product.html">
+									<img :src="c.images" alt="">
+								</a>
+							</div>
+
+							<a @click="del(i)">删除</a>
+							<div class="aui-car-box-list-text">
+								<h4>
+									<a href="ui-product.html">{{c.goodsName}}</a>
+								</h4>
+								<div class="aui-car-box-list-text-brief">
+									<span>{{c.specListCode}}</span>
+									
+								</div>
+								<div class="aui-car-box-list-text-price">
+									<div class="aui-car-box-list-text-pri">
+										￥<b class="aui-price">{{c.price}}</b>
+									</div>
+									<div class="aui-car-box-list-text-arithmetic">
+										<a href="javascript:;" class="minus" @click.prevent="cut(c)">-</a>
+										<span class="num">{{c.count}}</span>
+										<a href="javascript:;" class="plus" @click.prevent="add(c)">+</a>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</li>
+					
+				</ul>
+			</div>
+			<div class="aui-shopPrice">
+				本店总计：￥
+				<span class="aui-total-amount ShopTotal">00.00</span>
+			</div>
+		</div>
+	</section>
+	<div class="aui-payment-bar">
+
+		<!-- 全选 -->
+		<div class="all-checkbox">
+			<input type="checkbox" class="check goods-check" id="AllCheck" :checked="allChecked" @click.prevent="checkAll()">全选
+		</div>
+
+		<div class="shop-total">
+			<strong>合计：{{totalPrice}}</strong>
+			
+		</div>
+		<a class="settlement" @click="toLogin">结算</a>
+	</div>
+
+</div>
+</body>
+</html>
+
+<script src="themes/js/jquery.min.js"></script>
+<script src="themes/js/aui-car.js"></script>
+
+<script src="themes/js/vuejs-2.5.16.js"></script>
+<script src="themes/js/mock-min.js"></script>
+<script src="themes/js/mock.js"></script>
+<script src="themes/js/axios-0.18.0.js"></script>
+<script src="themes/js/api.js"></script>
+<script src="themes/components/topnav.js"></script>
+
+<script>
+
+	new Vue({
+		el: "#app",
+		data: {
+			//购物车数据
+			cart:[],
+
+			//全选框状态
+			allChecked:false,
+
+			//总价
+			totalPrices:0
+		},
+		methods: {
+			//增加数量
+            add:function(goods){ 
+				
+				goods.count++;  
+				//获得token信息，表示登录
+				let token = localStorage.getItem("token");
+
+				if(token!=null){
+					//登录
+					this.updateData(goods);
+				}else{
+					 //存放到本地缓存(未登录)
+					localStorage.setItem("car", JSON.stringify(goods)); 
+				}  
+                
+				
+			},
+			//减少数量
+            cut:function(goods){               
+				goods.count--;  
+				//获得token信息，表示登录
+				let token = localStorage.getItem("token");
+
+				if(token!=null){
+					//登录
+					this.updateData(goods);
+				}else{
+					 //存放到本地缓存(未登录)
+					localStorage.setItem("car", JSON.stringify(goods)); 
+				}
+			},
+
+			
+
+			//全选
+			checkAll:function(){
+				//取反
+				this.allChecked=!this.allChecked;
+
+				//改变复选框状态
+				this.cart.forEach(g=>{
+					g.cartChecked=this.allChecked;
+				});
+			},
+
+			//单选框
+			checkOne:function(c){
+				c.cartChecked=!c.cartChecked;
+
+				this.getAllChecked();
+
+				this.updateData(c);
+			
+				
+			},
+
+
+			//商品选中功能
+			getAllChecked :function(){
+				//商品选中数量
+				let checkCount =0;
+				this.cart.forEach(g =>{
+					if(g.cartChecked){
+						checkCount++;
+					}
+				});
+				
+				//选中个数与总个数进行比较
+				this.allChecked=(checkCount==this.cart.length);
+				//如果所有复选框选中，那么全选框也选中
+				return this.allChecked;
+			},
+
+			//删除
+			del:function(index){
+				console.info(index);
+					//获得token信息，表示登录
+				let token = localStorage.getItem("token");
+
+					if(token!=null){
+						if(window.confirm("您确定要删除吗?")){
+							deleteCart( this.cart[index].cid).then(res =>{
+								if(res.data.data.errno==0){
+									alert("删除成功");
+									location.href="car.html"
+								}else{
+									alert("删除失败")
+								}
+							});
+						}
+						
+					}else{
+						//登录
+						this.cart.splice(index,1);
+						//存放到本地缓存(未登录)
+						localStorage.setItem("cart", JSON.stringify(goods)); 
+					}
+				
+				
+			},
+
+			//登录后的页面跳转
+			toLogin:function(){
+				//获得token信息，表示登录
+				let token = localStorage.getItem("token");
+
+				if(token!=null){
+					//登录
+					this.cart.forEach( g => {
+					
+						if(g.cartChecked==true){
+							localStorage.setItem("oid",g.cid);
+							
+						}
+					});
+					
+					location.href="order.html";
+				}else{
+					//未登录
+					localStorage.setItem("returnURL","order.html");
+					
+					location.href="login.html";
+
+				}
+			},
+			//修改
+			updateData:function(goods){
+				let token=localStorage.getItem("token");
+				if(token!=null){
+					
+					//登录,更新数量和状态（如果数量为0.则删除）
+					//批量修改
+					var params={
+						cid:goods.cid,
+						count:goods.count,
+						cartChecked:goods.cartChecked,
+					}
+					
+					updateCart(params).then(res =>{
+						
+						console.info(res.data.data)
+						
+					});
+					
+					
+				}else{
+					//未登录
+					//购物车存放
+					if(this.cart){
+						localStorage.setItem("car",JSON.stringify(this.cart));
+					}
+				}
+			},
+
+		},
+		created: function () {
+			//获得token信息，表示登录
+			let token = localStorage.getItem("token");
+			//登录状态
+			if(token!=null){
+				getCart().then(res =>{
+					this.cart=res.data.data.data;
+					console.info(res.data.data.data);
+
+				});
+			}else{
+				//未登录状态
+				let cart=localStorage.getItem("car");
+				//获取本地数据
+				if(cart!=null){
+                    this.cart=JSON.parse(cart);
+                    console.info(this.cart);
+				}
+			}
+		},
+
+		computed:{
+			//总计价格
+			totalPrice:function(){
+				let sum = 0 ;
+						
+					this.cart.forEach( g => {
+					if(g.cartChecked==true){
+						sum += (g.price * g.count);
+					}
+					
+				});
+				
+				
+				return sum.toFixed(2);
+			}
+		}
+		
+
+	});
+
+</script>
